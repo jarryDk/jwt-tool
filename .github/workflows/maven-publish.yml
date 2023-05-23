@@ -1,8 +1,10 @@
 name: Maven Package
 
 on:
-  release:
-    types: [published]
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - "v*"
 
 jobs:
   build:
