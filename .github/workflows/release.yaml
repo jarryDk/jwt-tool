@@ -28,3 +28,8 @@ jobs:
             Yes - We have a new Release
           draft: false
           prerelease: false
+
+
+#
+# https://localheinz.com/articles/2022/01/24/creating-releases-with-github-actions/
+#
