@@ -1,0 +1,332 @@
+= Jwt Tool
+
+This project is all aboute JSON Web Token. 
+
+We get the option to convert a `JWT` to plaintext or json - basicly get the token in a human readable format.
+
+We also get the option to generate `JWT` with a validit signature.
+
+== Use
+
+----
+Usage: jwt-tool [-hV] [-f=<format>] [-k=<kid>] [-p=<payload>] [-t=<token>]
+  -f, --format=<format>     Output format json or plantext (default)
+  -h, --help                Show this help message and exit.
+  -k, --kid=<kid>           Input will be kid in header
+  -p, --payload=<payload>   Input will have to be base64 encoded Json!
+  -t, --token=<token>       Input will have to be a JWT!
+  -V, --version             Print version information and exit.
+----
+
+== Sample
+
+TIP: You might like to have `jq` installed - but you most likely already have. `sudo dnf install jq -y`
+
+=== PrettyPrint token
+
+.Input nativ - PrettyPrint token (output in plaintext format)
+[source,bash]
+----
+target/jwt-tool-1.0.0-SNAPSHOT-runner \
+    -t eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIzNDU2Nzg5LCJuYW1lIjoiSm9zZXBoIn0.OpOSSw7e485LOP5PrzScxHb7SR6sAOMRckfFwi4rp7o
+----
+
+.Output nativ - PrettyPrint token (output in plaintext format)
+----
+Token ::
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIzNDU2Nzg5LCJuYW1lIjoiSm9zZXBoIn0.OpOSSw7e485LOP5PrzScxHb7SR6sAOMRckfFwi4rp7o
+Header ::
+{
+    "alg": "HS256",
+    "typ": "JWT"
+}
+Payload ::
+{
+    "id": 123456789,
+    "name": "Joseph"
+}
+----
+
+=== Generate token
+
+.Input nativ  - Generate token (output in plaintext format)
+[source,bash]
+----
+target/jwt-tool-1.0.0-SNAPSHOT-runner \
+    -p $(echo "{\"id\":42,\"name\":\"Duke\"}" | base64)
+----
+
+.Output nativ - Generate token (output in plaintext format)
+----
+Token ::
+eyJraWQiOiIiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpZCI6NDIsIm5hbWUiOiJEdWtlIiwiZXhwIjoxNjg0ODMwNjQ1LCJpYXQiOjE2ODQ4MzAzNDUsImp0aSI6ImJhMzlhM2ZiLWE3ZjEtNDA2Yi1hMTZmLTUzZTMyMmU2MGE1NiJ9.b9SKNynAKWbzAhiWGHoSXwlzsXC-FQAj8OPMVplgL1wMDbAPARbz0d1_etmQNsoVk8X1s5wgRt_aqXVIva3bFzWbxJ52nlkbOHfqQQXC43hK9nAY7pPilnXCeXUh7daQiaLm6wsUEijJ6mN5ZuN1yUfqosd8U8dbZGAupqKkNArJ9m4Di2aMAcVQOEI7XJ3et7EMaqHWEQ3R-uZxEIrmkIw8szhFFgF7HifTuP0dcIC8inQ2HB1sbRLfINOSjc9MemaIkOQxESPrLKHwoZTGjpIj-FLMwqtyr8Mbm5B9gMLCAeZl6D_VqK7sTelH4y_r0llvOTst7iQTGuDRfReQ8Q
+Header ::
+{
+    "typ": "JWT",
+    "alg": "RS256"
+}
+Payload ::
+{
+    "id": 42,
+    "name": "Duke",
+    "exp": 1684830645,
+    "iat": 1684830345,
+    "jti": "ba39a3fb-a7f1-406b-a16f-53e322e60a56"
+}
+----
+
+.Input nativ  - Generate token (output in json format)
+[source,bash]
+----
+target/jwt-tool-1.0.0-SNAPSHOT-runner \
+    -p $(echo "{\"id\":42,\"name\":\"Duke\"}" | base64) \
+    -f json | jq
+----
+
+.Output nativ - Generate token (output in plaintext format)
+[source,json]
+----
+{
+    "token": "eyJraWQiOiIiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpZCI6NDIsIm5hbWUiOiJEdWtlIiwiZXhwIjoxNjg0ODMyMjU3LCJpYXQiOjE2ODQ4MzE5NTcsImp0aSI6IjEzZDQwZTVmLTU0NWEtNGRlNy1iZDM3LTM2ZDM1YjBjMmFkYyJ9.Adx-Tr93UEm-S9MsSwgIWH6v0x0fg3dluv13DxL7129kEI0y_CAGvVBIW4-SdK6flBA68_ncbkWDndjYxtnOB0aOGhLwvoA6HTJBwKRB2Qqxs1cdDXMtOOCexM9CPWmMAy_j3Y6GeAURVB3bhVuC9WNMwDM7bjH46K2b637nhCXrRDQH3AgXE-apwgl1fgKe1yMzogwBKm60v4jpbcn_u-C_BXG_DgGoyoOa9RL7EOlWffcYA8d2O5hEHYteK2zWHek1iucUogidjKohuEdudyBxySOupBukwLuPAzlTXoAEN5Y4QWC2gE7AKiJnKUJga4kDmstp4wY5X4mVIn5ltQ",
+    "header": {
+        "kid": "",
+        "typ": "JWT",
+        "alg": "RS256"
+    },
+    "payload": {
+        "id": 42,
+        "name": "Duke",
+        "exp": 1684832257,
+        "iat": 1684831957,
+        "jti": "13d40e5f-545a-4de7-bd37-36d35b0c2adc"
+    }
+}
+----
+
+.Input nativ  - Generate token (output in json format) and use jq to get only the token
+[source,bash]
+----
+target/jwt-tool-1.0.0-SNAPSHOT-runner \
+    -p $(echo "{\"id\":42,\"name\":\"Duke\"}" | base64) \
+    -f json | jq --raw-output '.token'
+----
+
+== Change location of privateKey.pem and `publicKey.pem
+
+How to use `privateKey.pem` and `publicKey.pem` located outside this project.
+
+Well we need to change the value of `smallrye.jwt.sign.key.location` and `smallrye.jwt.encrypt.key.location` in the 
+file `application.properties`. The change/configuration can be done in many ways - her is a way to to it using `System properties` and `Environment variables`.
+
+.Use System properties
+[source,bash]
+----
+jwt-tool \
+    -p $(echo "{\"id\":42,\"name\":\"Duke\"}" | base64) \
+    -Dsmallrye.jwt.sign.key.location=$HOME/keys/privateKey.pem \
+    -Dsmallrye.jwt.encrypt.key.location=$HOME/keys/publicKey.pem
+----
+
+.Use Environment variables
+[source,bash]
+----
+export SMALLRYE_JWT_SIGN_KEY_LOCATION=$HOME/keys/privateKey.pem
+export SMALLRYE_JWT_ENCRYPT_KEY_LOCATION=$HOME/keys/publicKey.pem
+jwt-tool \
+    -p $(echo "{\"id\":42,\"name\":\"Duke\"}" | base64)
+----
+
+
+== Build
+
+.Build Nativ
+[source,bash]
+----
+mvn clean package -Pnative
+----
+
+TIP: You might like to have `GRAALVM_HOME` as an Environment variables before building native and you might like to execute `gu install native-image` in the folder `$GRAALVM_HOME/bin` too.
+
+.Build JVM
+[source,bash]
+----
+mvn clean package
+----
+
+.Build Uber jar
+[source,bash]
+----
+mvn clean package -Dquarkus.package.type=uber-jar
+----
+
+== Use in different modes
+
+=== Native Mode
+
+.Run nativ - PrettyPrint token (output in plaintext format)
+[source,bash]
+----
+target/jwt-tool-1.0.0-SNAPSHOT-runner \
+    -t eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIzNDU2Nzg5LCJuYW1lIjoiSm9zZXBoIn0.OpOSSw7e485LOP5PrzScxHb7SR6sAOMRckfFwi4rp7o
+----
+
+.Run nativ - PrettyPrint token (output in json format)
+[source,bash]
+----
+package -Pnative
+target/jwt-tool-1.0.0-SNAPSHOT-runner \
+    -t eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIzNDU2Nzg5LCJuYW1lIjoiSm9zZXBoIn0.OpOSSw7e485LOP5PrzScxHb7SR6sAOMRckfFwi4rp7o \
+    -f json | jq
+----
+
+.Run nativ  - Generate token (output in plaintext format)
+[source,bash]
+----
+package -Pnative
+target/jwt-tool-1.0.0-SNAPSHOT-runner \
+    -k ucJxucWD1VfqR5NzBkJfx6FsYbbGxG18y9mVkk1XabY \
+    -p $(echo "{\"id\":42,\"name\":\"Duke\"}" | base64)
+----
+
+.Run nativ  - Generate token (output in json format)
+[source,bash]
+----
+package -Pnative
+target/jwt-tool-1.0.0-SNAPSHOT-runner \
+    -k ucJxucWD1VfqR5NzBkJfx6FsYbbGxG18y9mVkk1XabY \
+    -p $(echo "{\"id\":42,\"name\":\"Duke\"}" | base64) \
+    -f json | jq
+----
+
+=== JVM Mode
+
+.Run via JVM - PrettyPrint token
+[source,bash]
+----
+mvn clean package
+java -jar target/quarkus-app/quarkus-run.jar \
+    -t eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIzNDU2Nzg5LCJuYW1lIjoiSm9zZXBoIn0.OpOSSw7e485LOP5PrzScxHb7SR6sAOMRckfFwi4rp7o
+----
+
+.Run via JVM - Generate token
+[source,bash]
+----
+mvn clean package
+java -jar target/quarkus-app/quarkus-run.jar \
+    -k ucJxucWD1VfqR5NzBkJfx6FsYbbGxG18y9mVkk1XabY \
+    -p $(echo "{\"id\":42,\"name\":\"Duke\"}" | base64)
+----
+
+=== JVM (Uber-Jars) Mode
+
+.Run via JVM (Uber-Jars)
+[source,bash]
+----
+mvn clean package
+java -jar target/jwt-tool-1.0.0-SNAPSHOT-runner.jar \
+    -t eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIzNDU2Nzg5LCJuYW1lIjoiSm9zZXBoIn0.OpOSSw7e485LOP5PrzScxHb7SR6sAOMRckfFwi4rp7o
+----
+
+
+=== DEV Mode
+
+.Run in dev mode - PrettyPrint token
+[source,bash]
+----
+mvn quarkus:dev \
+    -Dquarkus.args="-t eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIzNDU2Nzg5LCJuYW1lIjoiSm9zZXBoIn0.OpOSSw7e485LOP5PrzScxHb7SR6sAOMRckfFwi4rp7o"
+----
+
+.Run in dev mode - PrettyPrint token (json output)
+[source,bash]
+----
+mvn quarkus:dev \
+    -Dquarkus.args="-t eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIzNDU2Nzg5LCJuYW1lIjoiSm9zZXBoIn0.OpOSSw7e485LOP5PrzScxHb7SR6sAOMRckfFwi4rp7o -f json"
+----
+
+
+.Run in dev mode - Generate token
+[source,bash]
+----
+mvn quarkus:dev \
+    -Dquarkus.args="-k ucJxucWD1VfqR5NzBkJfx6FsYbbGxG18y9mVkk1XabY -p $(echo "{\"id\":42,\"name\":\"Duke\"}" | base64)"
+----
+
+.Run in dev mode - Generate token (json output)
+[source,bash]
+----
+mvn quarkus:dev \
+    -Dquarkus.args="-k ucJxucWD1VfqR5NzBkJfx6FsYbbGxG18y9mVkk1XabY -p $(echo "{\"id\":42,\"name\":\"Duke\"}" | base64) -f json"
+----
+
+== Project structure
+
+.Get the Project structure
+[source,bash]
+----
+tree -I target
+----
+
+.Output of tree
+----
+.
+├── pom.xml
+├── README.adoc
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── dk
+│   │   │       └── jarry
+│   │   │           └── picocli
+│   │   │               ├── JwtTokenCommand.java
+│   │   │               └── JwtTokenService.java
+│   │   └── resources
+│   │       ├── application.properties
+│   │       ├── privateKey.pem
+│   │       ├── publicKey.pem
+│   │       └── rsaPrivateKey.pem
+│   └── test
+│       └── java
+│           └── dk
+│               └── jarry
+│                   └── picocli
+│                       └── JwtTokenServiceTest.java
+└── todo-service-hack.json
+----
+
+We have a simple project strukture where `application.properties` tells the location of `privateKey.pem` and `publicKey.pem`.
+
+== Make Keycloak use a keys generated outside Keycloak
+
+.Generate Keys
+[source,bash]
+----
+openssl genrsa -out rsaPrivateKey.pem 2048
+openssl pkcs8 -topk8 -nocrypt -inform pem -in rsaPrivateKey.pem -outform pem -out privateKey.pem
+openssl rsa -pubout -in rsaPrivateKey.pem -out publicKey.pem
+----
+
+TIP: I executed the above command in the folder `jwt-tool/src/main/resource`
+
+== Get a JWT from Keycloak
+
+.Grant type set to password
+[source,bash]
+----
+curl -X POST https://keycloak.jarry.dk:8543/realms/jarry/protocol/openid-connect/token \
+    --user todo-service-hack:todo-service-hack-secret \
+    -H 'content-type: application/x-www-form-urlencoded' \
+    -d 'username=micbn&password=change_me&grant_type=password' | jq --raw-output '.access_token'
+----
+
+== Guides
+
+- https://quarkus.io/guides/picocli
+- https://quarkus.io/guides/security-jwt
+- https://quarkus.io/guides/security-jwt-build
+- https://quarkus.io/guides/config
+- https://quarkus.io/guides/config-reference#configuration-sources
+
+== ANSI_escape_code
+
+https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
