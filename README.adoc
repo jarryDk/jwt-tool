@@ -319,6 +319,13 @@ curl -X POST https://keycloak.jarry.dk:8543/realms/jarry/protocol/openid-connect
     -d 'username=micbn&password=change_me&grant_type=password' | jq --raw-output '.access_token'
 ----
 
+== Install
+
+[source,bash]
+----
+sudo install -m 555 target/jwt-tool-0.0.1-runner /usr/local/bin/jwt-tool
+----
+
 == Guides
 
 - https://quarkus.io/guides/picocli
